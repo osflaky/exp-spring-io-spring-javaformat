@@ -1,0 +1,33 @@
+.DS_Store
+target
+.classpath
+.project
+.settings
+.flattened-pom.xml
+.idea
+*.iml
+*.ipr
+*.iws
+spring-javaformat-eclipse/io.spring.javaformat.eclipse/lib
+spring-javaformat-eclipse/io.spring.javaformat.eclipse.feature/lib
+spring-javaformat-eclipse/io.spring.javaformat.eclipse.site/lib
+spring-javaformat-eclipse/io.spring.javaformat.eclipse.tests/lib
+.gradle
+spring-javaformat-gradle/spring-javaformat-gradle-plugin/bin
+spring-javaformat-gradle/spring-javaformat-gradle-plugin/build
+.gradletasknamecache
+samples/spring-javaformat-gradle-sample/bin
+samples/spring-javaformat-gradle-sample/build
+spring-javaformat/spring-javaformat-checkstyle/bin
+spring-javaformat/spring-javaformat-formatter-eclipse-rewriter/bin
+build.log
+pid
+.factorypath
+
+# npm
+node_modules/
+
+# vscode
+spring-javaformat-vscode/spring-javaformat/out/
+spring-javaformat-vscode/spring-javaformat/runtime/
+*.vsix

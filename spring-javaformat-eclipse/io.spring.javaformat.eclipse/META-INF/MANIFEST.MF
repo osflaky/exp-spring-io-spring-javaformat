@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Spring Java Format Plugin
+Bundle-SymbolicName: io.spring.javaformat.eclipse;singleton:=true
+Automatic-Module-Name: io.spring.javaformat.eclipse
+Bundle-Version: 0.0.49.qualifier
+Bundle-Activator: io.spring.javaformat.eclipse.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.resources,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.core,
+ org.eclipse.jface.text,
+ org.eclipse.m2e.jdt;resolution:=optional,
+ org.eclipse.m2e.core;resolution:=optional,
+ org.eclipse.m2e.maven.runtime;resolution:=optional,
+ org.eclipse.buildship.core;resolution:=optional,
+ net.sf.eclipsecs.core;resolution:=optional
+Bundle-ClassPath: .,
+ lib/spring-javaformat-config.jar,
+ lib/spring-javaformat-formatter.jar,
+ lib/spring-javaformat-checkstyle.jar,
+ lib/spring-javaformat-formatter-eclipse-jdt-jdk17.jar,
+ lib/spring-javaformat-formatter-eclipse-jdt-jdk8.jar
+Bundle-ActivationPolicy: lazy

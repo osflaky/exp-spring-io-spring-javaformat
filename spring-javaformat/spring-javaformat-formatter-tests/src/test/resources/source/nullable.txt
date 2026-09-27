@@ -1,0 +1,48 @@
+package example;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
+
+/**
+ * Nullable.
+ *
+ * @author Phillip Webb
+ * @since 1.0.0
+ */
+public interface ExampleNullables {
+
+	@Override @Nullable String myMethod(String param);
+
+	@Override public @Nullable String myPublicMethod(String param);
+
+	Object myArrayMethod(@Nullable String string, @Nullable String @Nullable [] array, @Nullable
+			String @Nullable ... 	varargs);
+
+	default Object inBody() {
+		@Nullable Object[] args = new Object[length];
+		@Nullable List<@Nullable Object> list = new Object[length];
+		Object @Nullable [] moreArgs = new Object[length];
+		return args;
+	}
+
+	@NullMarked
+	void withNullMarked(String str);
+
+	@NullUnmarked
+	void withNullUnmarked(String str);
+
+	static class Fields {
+
+		@Nullable Object one;
+
+		@NonNull Object two;
+
+		private @Nullable Object three;
+
+		private @NonNull Object four;
+
+	}
+
+}

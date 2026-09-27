@@ -1,0 +1,219 @@
+= Contributing to Spring Java Format
+
+Spring Java Format is released under the Apache 2.0 license.
+If you would like to contribute something, or simply want to hack on the code this document should help you get started.
+
+
+
+== Code of Conduct
+This project adheres to the Contributor Covenant link:CODE_OF_CONDUCT.adoc[code of conduct].
+By participating, you are expected to uphold this code.
+Please report unacceptable behavior to spring-code-of-conduct@pivotal.io.
+
+
+
+== Include a Signed-off-by Trailer
+All commits must include a __Signed-off-by__ trailer at the end of each commit message to indicate that the contributor agrees to the https://en.wikipedia.org/wiki/Developer_Certificate_of_Origin[Developer Certificate of Origin (DCO)].
+For additional details, please refer to the blog post https://spring.io/blog/2025/01/06/hello-dco-goodbye-cla-simplifying-contributions-to-spring[Hello DCO, Goodbye CLA: Simplifying Contributions to Spring].
+
+
+
+== Working With the Code
+If you don't have an IDE preference we would recommend that you use
+https://spring.io/tools/sts[Spring Tools Suite] or
+https://eclipse.org[Eclipse] when working with the code. We use the
+https://eclipse.org/m2e/[M2Eclipse] eclipse plugin for maven support. Other IDEs and tools
+should also work without issue.
+
+
+
+=== Building From Source
+To build the source you will need to install JDK 17.
+
+
+
+==== Default Build
+The project can be built from the root directory using the standard maven command:
+
+[indent=0]
+----
+	$ ./mvnw clean install
+----
+
+NOTE: You may need to increase the amount of memory available to Maven by setting a `MAVEN_OPTS` environment variable with the value `-Xmx512m`
+
+
+
+=== Importing Into Eclipse
+You can import the code into any Eclipse based distribution as long as it had the https://eclipse.org/m2e/[M2Eclipse] eclipse plugin.
+If you don't already have m2eclipse installed it is available from the "Eclipse marketplace".
+
+Once imported, you can apply eclipse settings by running:
+
+[indent=0]
+----
+	$ ./mvnw -Peclipse validate
+----
+
+NOTE: You'll need to close the `spring-javaformat-formatter-eclipse` and `spring-javaformat-formatter-eclipse-runtime` projects following import since they contain rewritten packages that aren't supported by the IDE
+
+
+
+=== Importing Into IntelliJ IDEA
+You can import the code as a maven project into IntelliJ IDEA.
+
+
+
+==== Module Dependencies
+When IntelliJ IDEA parses `pom.xml`, it automatically creates inter-module dependencies if dependent libraries are coming from other modules within the project.
+However, when dependent modules perform repackaging (e.g. `spring-javaformat-formatter-eclipse-runtime` module), the current module cannot resolve all classes by module dependencies because repackaging (shade & binary manipulation) moves around classes.
+Therefore, you need to manually update the dependencies from the module to the produced jars.
+
+Following modules perform repackaging.
+
+* `spring-javaformat-formatter-eclipse`
+* `spring-javaformat-formatter-eclipse-runtime`
+
+Modules that depend on these modules need jar dependencies instead of module dependencies.
+
+
+
+===== Setting up Jar Dependencies
+The following steps define jar-based project libraries on IDE and add them to the modules that need jar dependencies.
+
+*Add a jar file-based project library*
+
+* "Project Settings" -> "Libraries"
+* Click "+" sign, then select "Java"
+* Specify the jar file
+
+For example, you can specify the jar file in the target directory(`<PROJECT>/spring-javaformat/spring-javaformat-formatter-eclipse-runtime/target/spring-javaformat-formatter-eclipse-runtime-0.0.28-SNAPSHOT.jar`)
+or one in the local maven repository(`~/.m2/repository/io/spring/javaformat/spring-javaformat-formatter-eclipse-runtime/0.0.28-SNAPSHOT/spring-javaformat-formatter-eclipse-runtime-0.0.28-SNAPSHOT.jar`).
+
+image::.github/images/setup-idea-library.png[Setup IntelliJ IDEA library]
+
+*Add library dependencies to modules*
+
+* "Project Settings" -> "Modules"
+* Select a module that depends on repackaging modules
+* Click "+" sign and "2 Library"
+* "Choose Libraries" and select necessary libraries that have added in the previous step
+* Move up the added libraries higher than the module dependencies (or remove the module dependencies)
+
+image::.github/images/setup-idea-dependency.png[Setup IntelliJ IDEA Dependencies]
+
+
+
+=== Setting up IntelliJ IDEA Plugin Development
+
+
+
+==== Download Images
+To develop the `spring-javaformat-intellij-idea-plugin` module, you need an IntelliJ IDEA application on your local machine.
+
+* Open the `pom.xml` in `spring-javaformat-intellij-idea/spring-javaformat-intellij-idea-runtime`.
+* Check `intellij.binary` and `intellij.source` properties to find out the appropriate IntelliJ IDEA version.
+* Download the binary from the url in `intellij.binary`.
+(For OSX, replace the `.tar.gz` to `.dmg` to download the image file.)
+* Install the image to the local machine
+* Download the source files from github specified in `intellij.source` and unzip it.
+
+
+
+==== Setup SDK
+* Open "Project Structure" - "Platform Settings" - "SDKs"
+* Click "+" sign, "Add Intellij Platform Plugin SDK..."
+* Specify the installed intellij image.  (`/applications/IntelliJ IDEA CE` for OSX)
+* On the right panel, "Sourcepath", Click "+" sign, specify unzipped intellij source directory
+* Specify "Sandbox Home" directory
+
+image::.github/images/setup-idea-plugin-sdk.png[Setup IntelliJ IDEA Plugin SDK]
+
+Please see the https://plugins.jetbrains.com/docs/intellij/setting-up-environment.html[IntelliJ IDEA reference] for how to setup a plugin development in details.
+
+
+
+==== Convert to Plugin Module
+The imported `spring-javaformat-intellij-idea-plugin` module is recognized as a java module.
+This needs to be converted to a plugin module.
+
+* Open `spring-javaformat-intellij-idea-plugin.iml` in `spring-javaformat-intellij-idea/spring-javaformat-intellij-idea-plugin`
+* Change `type="JAVA_MODULE"` to `type="PLUGIN_MODULE"`
+
+[source,xml]
+----
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="PLUGIN_MODULE" version="4">
+----
+
+Reference https://stackoverflow.com/questions/18278440/how-to-import-and-run-existing-plugins-from-intellij-community-edition-repo[how to convert existing module to a plugin module]
+
+* Open "Project Structure" - "Modules"
+* Check `spring-javaformat-intellij-idea-plugin` icon turns to a plugin icon
+* "Plugin Deployment" - "Path to META-INF/plugin.xml"
+* Specify `<PROJECT>spring-javaformat/spring-javaformat-intellij-idea/spring-javaformat-intellij-idea-plugin/src/main/resources`
+
+image::.github/images/setup-idea-plugin-module.png[Setup IntelliJ IDEA Plugin Module]
+
+
+
+=== Setting up Gradle Plugin Development
+`spring-javaformat-gradle-plugin` module is a gradle plugin and requires gradle related classes.
+
+To add gradle classes, convert this module to a gradle project.
+
+* On the project pain, right-click `build.gradle` in `spring-javaformat-gradle-plugin` module
+* Select "Import Gradle Project"
+
+
+
+=== Setting up Visual Studio Code Extension Development
+The `spring-javaformat-vscode-extension` extension consists of a formatter written in Java and an extension written in TypeScript.
+If you want to work on the TypeScript code it can opened directly with Visual Studio Code.
+
+Maven delegates to `npm run package` to actually generate the extension.
+
+Code is formatted with prettier.
+If you need to reform the code you can run `npx prettier --write .`
+
+There is a basic test included with the project, but since it needs UI elements it doesn't run as part of the regular build.
+If you make changes to the extension, you should run "`Extension Tests`" from vscode.
+
+
+
+=== Importing Into Other IDEs
+Maven is well supported by most Java IDEs. Refer to your vendor documentation.
+
+
+
+== Understanding the Code
+There are quite a few moving parts to this project and the build is quite complex.
+At the top level there are 6 projects:
+
+* `spring-javaformat` - The main formatter project
+* `spring-javaformat-eclipse` - The Eclipse plugin
+* `spring-javaformat-gradle` - The Gradle plugin
+* `spring-javaformat-intellij` - The IntelliJ IDEA plugin
+* `spring-javaformat-maven` - The Maven plugin
+* `spring-javaformat-vscode` - The Visual Studo Code extension
+
+Under `spring-javaformat` the following projects are defined:
+
+* `spring-javaformat-checkstyle` - The checkstyle plugin
+* `spring-javaformat-formatter` - The main formatter code
+* `spring-javaformat-formatter-test-support` - Support classes for tests
+* `spring-javaformat-formatter-tests` - Tests for the formatter (external so that they we can test Java 8 and 11)
+* `spring-javaformat-formatter-shader` - Shader support classes
+* `spring-javaformat-formatter-shaded` - A shaded version of the formatter with all dependencies included
+* `spring-javaformat-formatter-eclipse-jdk8` - The eclipse JDK 8 formatter (repackaged and slightly adapted)
+* `spring-javaformat-formatter-eclipse-jdk17` - The eclipse JDK 17 formatter (repackaged and slightly adapted)
+* `spring-javaformat-formatter-eclipse-jdt-jdk8` - The eclipse JDT import for JDK 8
+* `spring-javaformat-formatter-eclipse-jdt-jdk17` - The eclipse JDT import for JDK 17
+* `spring-javaformat-formatter-eclipse-rewriter` - Internal utility used to modify eclipse code
+* `spring-javaformat-formatter-eclipse-runtime` - Eclipse runtime JAR for use when running outside of Eclipse
+
+The main formatter is based on the formatter included with Eclipse.
+The shade plugin is used to repackage the formatter code to ensure that it doesn't clash with the real one when used in the Eclipse plugin.
+A small amount of bytecode modification is also applied that increase the visibility of a few methods.
+
+When the formatter runs outside of Eclispe some eclipse runtime files are also needed.
+The `spring-javaformat-formatter-eclipse-runtime` project uses proguard to build a minimal eclipse runime jar.
